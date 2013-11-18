@@ -4,28 +4,31 @@ var walk = function(o, cb){
 		name: null,
 		parent: null,
 		get isRoot (){ return this.node === root; },
-		update: function(v){ this.parent[this.name] = this.node = v; }
-		
+		update: function(v){ this.parent[this.name] = this.node = v; },
+		path: []
 	};
 
-	var onWalk = function(o, cb){
-			
+	var onWalk = function(o, cb, state){
 		state.parent = o;
-
+		state.path = state.path;
+	
 		for (var p in o){
 			state.name = p;
+			state.path.push(state.name);
+
 			state.node = o[state.name];
 			state.isOwn = Object.hasOwnProperty(state.name);
 
 			var keepGoing = cb.call(state, state.node);
 			if (keepGoing === false) continue;
 
-			onWalk(state.node, cb);
+			onWalk(state.node, cb, state);
+
+			state.path.length = state.path.length - 1;
 		}
 	};
 
-	onWalk(o, cb);
+	onWalk(o, cb, state);
 };
-
 
 module.exports = walk;
