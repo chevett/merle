@@ -10,7 +10,6 @@ var walk = function(o, cb){
 
 	var onWalk = function(o, cb, state){
 		state.parent = o;
-		state.path = state.path;
 	
 		for (var p in o){
 			state.name = p;
@@ -24,7 +23,7 @@ var walk = function(o, cb){
 
 			onWalk(state.node, cb, state);
 
-			state.path.length = state.path.length - 1;
+			state.path.length -= 1;
 		}
 	};
 
