@@ -19,10 +19,10 @@ var walk = function(o, cb){
 			state.isOwn = Object.hasOwnProperty(state.name);
 
 			var keepGoing = cb.call(state, state.node);
-			if (keepGoing === false) continue;
-
-			onWalk(state.node, cb, state);
-
+			if (keepGoing !== false) {
+				onWalk(state.node, cb, state);
+			}
+			
 			state.path.length -= 1;
 		}
 	};
