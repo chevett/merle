@@ -13,25 +13,26 @@ var walk = function(objectToWalk, cb){
 };
 
 var doWalk = function(objectNode, keys, state, depth, cb){
-	var newKeys;
+	var newKeys, value;
 	state._parent = objectNode;
 	state.depth = depth;
 
 	for (var i=0, l=keys.length; i<l; i++){
 		state.name = keys[i];
 		state.path.push(state.name);
-		state.value = objectNode[state.name];
+		state.value = value = objectNode[state.name];
 
 		newKeys = getKeys(state.value);
 		state.isLeaf = !newKeys || !newKeys.length;
 
 		var keepGoing = cb.call(state);
-		if (keepGoing !== false) {
-			doWalk(state.value, newKeys, state, depth+1, cb);
+
+		if (state.value !== value){
+			objectNode[state.name] = state.value;
 		}
 
-		if (state.value !== objectNode[keys[i]]){
-			objectNode[keys[i]] = state.value;
+		if (keepGoing !== false) {
+			doWalk(objectNode[state.name], newKeys, state, depth+1, cb);
 		}
 
 		state.path.length -= 1;
