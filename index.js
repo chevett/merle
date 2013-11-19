@@ -8,26 +8,25 @@ var walk = function(o, cb){
 		path: []
 	};
 
-	var onWalk = function(o, cb, state){
-		state.parent = o;
-	
-		for (var p in o){
-			state.name = p;
-			state.path.push(state.name);
+	doWalk(o, cb, state, 0);
+};
 
-			state.node = o[state.name];
-			state.isOwn = Object.hasOwnProperty(state.name);
+var doWalk = function(o, cb, state, depth){
+	state.parent = o;
+	state.depth = depth;
 
-			var keepGoing = cb.call(state, state.node);
-			if (keepGoing !== false) {
-				onWalk(state.node, cb, state);
-			}
-			
-			state.path.length -= 1;
+	for (var p in o){
+		state.name = p;
+		state.path.push(state.name);
+		state.node = o[state.name];
+
+		var keepGoing = cb.call(state, state.node);
+		if (keepGoing !== false) {
+			doWalk(state.node, cb, state, depth+1);
 		}
-	};
-
-	onWalk(o, cb, state);
+		
+		state.path.length -= 1;
+	}
 };
 
 module.exports = walk;

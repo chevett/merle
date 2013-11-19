@@ -57,6 +57,57 @@ describe('name property', function(){
 	});
 });
 
+describe('depth property', function(){
+	it('should start at zero', function(){
+		var o = { propertyName1: 4 };
+
+		merle(o, function(){
+			expect(this.depth).to.be.equal(0);
+		});
+	});
+	it('should be 1 one level deep', function(){
+		var o = { propertyName1: {two:6} };
+
+		var found = false;
+		merle(o, function(){
+			if (this.name === 'two'){
+				found = true;
+				expect(this.depth).to.be.equal(1);
+			}
+		});
+
+		expect(found).to.be.true;
+	});
+	it('should be 2 two levels deep', function(){
+		var o = { propertyName1: {two:{three:6}} };
+
+		var found = false;
+		merle(o, function(){
+			if (this.name === 'three'){
+				found = true;
+				expect(this.depth).to.be.equal(2);
+			}
+		});
+
+		expect(found).to.be.true;
+	});
+	it('should be 2 two levels deep even when there are siblings', function(){
+		var o = { 
+			propertyName1: {two:{three:6}},
+			propertyName2:{ test:1}
+		};
+
+		var found = false;
+		merle(o, function(){
+			if (this.name === 'three'){
+				found = true;
+				expect(this.depth).to.be.equal(2);
+			}
+		});
+
+		expect(found).to.be.true;
+	});
+});
 describe('path property', function(){
 	it('should be an array of parent property names', function(){
 		var o = {
