@@ -47,6 +47,21 @@ describe('walking objects', function(){
 describe('walking arrays', function(){
 });
 
+describe('stop walking', function(){
+	it('should not walk children if false is returned', function(){
+		var o = {
+			stopHere: {
+				propertyA: 6
+			}
+		};
+
+		merle(o, function(){
+			if (this.name === 'stopHere') return false;
+
+			expect(this.name).to.not.be.equal('propertyA');
+		});
+	});
+});
 describe('name property', function(){
 	it('should be set to the property name', function(){
 		var o = { propertyName1: 4 };
