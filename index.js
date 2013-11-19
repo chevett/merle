@@ -17,9 +17,8 @@ var doWalk = function(objectNode, keys, state, depth, cb){
 	state.parent = objectNode;
 	state.depth = depth;
 
-	for (var p in objectNode){
-
-		state.name = p;
+	for (var i=0, l=keys.length; i<l; i++){
+		state.name = keys[i];
 		state.path.push(state.name);
 		state.value = state.node = objectNode[state.name];
 		state.isOwn = objectNode.hasOwnProperty(state.name);
