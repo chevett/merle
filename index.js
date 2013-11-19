@@ -18,8 +18,9 @@ var doWalk = function(o, cb, state, depth){
 	for (var p in o){
 		state.name = p;
 		state.path.push(state.name);
-		state.node = o[state.name];
-
+		state.value = state.node = o[state.name];
+		state.isOwn = o.hasOwnProperty(state.name);
+		
 		var keepGoing = cb.call(state, state.node);
 		if (keepGoing !== false) {
 			doWalk(state.node, cb, state, depth+1);

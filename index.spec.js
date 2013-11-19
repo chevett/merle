@@ -57,6 +57,24 @@ describe('name property', function(){
 	});
 });
 
+describe('isOwn property', function(){
+	it('should be set to the property name', function(){
+		var o = { propertyName1: 4 };
+		o = Object.create(o);
+		o.propertyName2 = 6;
+
+
+		merle(o, function(){
+			if (this.name === 'propertyName1'){
+				expect(this.isOwn).to.be.false;
+			}
+			if (this.name === 'propertyName2'){
+				expect(this.isOwn).to.be.true;
+			}
+		});
+	});
+});
+
 describe('depth property', function(){
 	it('should start at zero', function(){
 		var o = { propertyName1: 4 };
