@@ -31,8 +31,8 @@ describe('walking objects', function(){
 	it('should pass the property value as the only parameter', function(){
 		var o = { propertyName1: 4 };
 
-		merle(o, function(p){
-			expect(p).to.be.equal(4);
+		merle(o, function(){
+			expect(this.value).to.be.equal(4);
 		});
 	});
 
@@ -166,6 +166,7 @@ describe('depth property', function(){
 	});
 	it('should be 2 two levels deep even when there are siblings', function(){
 		var o = { 
+			propertyDontCare: 9000,
 			propertyName1: {two:{three:6}},
 			propertyName2:{ test:1}
 		};
@@ -195,14 +196,14 @@ describe('path property', function(){
 		};
 	
 		var found666 = false, found777 = false;
-		merle(o, function(p){
+		merle(o, function(){
 		
-			if (p === 666){
+			if (this.value === 666){
 				found666 = true;
 				expect(this.path).to.eql(['p', 'q', 'r', 's']);
 			}
 
-			if (p === 777){
+			if (this.value === 777){
 				found777 = true;
 				expect(this.path).to.eql(['p', 'q', 'w']);
 			}
