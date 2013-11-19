@@ -5,7 +5,8 @@ var walk = function(objectToWalk, cb){
 			name: null,
 			parent: null,
 			get isRoot (){ return this.node === objectToWalk; },
-			update: function(v){ this.parent[this.name] = this.node = v; },
+			get isOwn (){ return this._parent.hasOwnProperty(this.name); },
+			update: function(v){ this._parent[this.name] = this.node = v; },
 			path: []
 		};
 		
@@ -14,14 +15,13 @@ var walk = function(objectToWalk, cb){
 
 var doWalk = function(objectNode, keys, state, depth, cb){
 	var newKeys;
-	state.parent = objectNode;
+	state._parent = objectNode;
 	state.depth = depth;
 
 	for (var i=0, l=keys.length; i<l; i++){
 		state.name = keys[i];
 		state.path.push(state.name);
 		state.value = state.node = objectNode[state.name];
-		state.isOwn = objectNode.hasOwnProperty(state.name);
 
 		newKeys = getKeys(state.value);
 		state.isLeaf = !newKeys || !newKeys.length;
@@ -43,4 +43,5 @@ var getKeys = function(value){
 
 	return arr;
 };
+
 module.exports = walk;
