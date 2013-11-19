@@ -45,6 +45,22 @@ describe('walking objects', function(){
 });
 
 describe('walking arrays', function(){
+	it('should walk a simple array', function(){
+		merle([1], function(){
+			expect(this.value).to.be.equal(1);
+		});
+	});
+	it('should be able to replace a value in a simple array', function(){
+		var arr = [1, 2, 3];
+
+		merle(arr, function(){
+			if (this.value === 2){
+				this.value = 6;
+			}
+		});
+
+		expect(arr).to.eql([1, 6, 3]);
+	});
 });
 
 describe('stop walking', function(){
@@ -183,19 +199,12 @@ describe('path property', function(){
 		
 			if (p === 666){
 				found666 = true;
-				expect(this.path).to.have.length(4);
-				expect(this.path[0]).to.be.equal('p');
-				expect(this.path[1]).to.be.equal('q');
-				expect(this.path[2]).to.be.equal('r');
-				expect(this.path[3]).to.be.equal('s');
+				expect(this.path).to.eql(['p', 'q', 'r', 's']);
 			}
 
 			if (p === 777){
 				found777 = true;
-				expect(this.path).to.have.length(3);
-				expect(this.path[0]).to.be.equal('p');
-				expect(this.path[1]).to.be.equal('q');
-				expect(this.path[2]).to.be.equal('w');
+				expect(this.path).to.eql(['p', 'q', 'w']);
 			}
 		});
 

@@ -6,7 +6,6 @@ var walk = function(objectToWalk, cb){
 			parent: null,
 			get isRoot (){ return this.node === objectToWalk; },
 			get isOwn (){ return this._parent.hasOwnProperty(this.name); },
-			update: function(v){ this._parent[this.name] = this.node = v; },
 			path: []
 		};
 		
@@ -29,6 +28,10 @@ var doWalk = function(objectNode, keys, state, depth, cb){
 		var keepGoing = cb.call(state, state.node);
 		if (keepGoing !== false) {
 			doWalk(state.node, newKeys, state, depth+1, cb);
+		}
+
+		if (state.value !== objectNode[keys[i]]){
+			objectNode[keys[i]] = state.value;
 		}
 
 		state.path.length -= 1;
