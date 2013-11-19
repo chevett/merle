@@ -72,6 +72,30 @@ describe('name property', function(){
 	});
 });
 
+describe('roots and leaves', function(){
+	it('should have isRoot and isLeaf properties', function(){
+		var o = {
+			propertyName1: {
+				propertyA: 6
+			}
+		};
+
+		merle(o, function(){
+			if (this.name === 'propertyName1'){
+				expect(this.isRoot).to.be.false;
+				expect(this.isLeaf).to.be.false;
+			} else if (this.name === 'propertyA'){
+				expect(this.isRoot).to.be.false;
+				expect(this.isLeaf).to.be.true;
+			}
+			else {
+				expect(false).to.be.true;
+			}
+
+		});
+	});
+});
+
 describe('isOwn property', function(){
 	it('should be set to the property name', function(){
 		var o = { propertyName1: 4 };
