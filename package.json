@@ -1,6 +1,6 @@
 {
   "name": "merle",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "walk objects, including inherited members",
   "main": "index.js",
   "scripts": {
