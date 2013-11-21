@@ -1,14 +1,25 @@
 var expect = require('chai').expect;
 var merle = require('./index.js');
-var util = require('./test-util');
 
 describe('walking objects', function(){
+
+	function expectProperties(o, arr){
+		var propertyNames = [];
+		merle(o, function(){
+			if (this.isRoot) return;
+			propertyNames.push(this.name);
+		});
+
+		expect(propertyNames).to.be.of.length(arr.length);
+		expect(propertyNames).to.have.members(arr);
+	};
+
 	it('should walk all own properties', function(){
 		var o = {};
 		o.o1 = {};
 		o.o2 = {};
 
-		util.expectProperties(o, ['o1', 'o2']);
+		expectProperties(o, ['o1', 'o2']);
 	});
 
 	it('should walk all own properties even when nested', function(){
@@ -17,7 +28,7 @@ describe('walking objects', function(){
 		o.o2 = {};
 		o.o2.test = function(){};
 
-		util.expectProperties(o, ['o1', 'o2', 'test']);
+		expectProperties(o, ['o1', 'o2', 'test']);
 	});
 
 	it('should walk all inherited properties', function(){
@@ -25,28 +36,32 @@ describe('walking objects', function(){
 		o.o1 = {};
 		o = Object.create(o);
 
-		util.expectProperties(o, ['o1']);
+		expectProperties(o, ['o1']);
 	});
 
-	it('should pass the property value as the only parameter', function(){
-		var o = { propertyName1: 4 };
-
-		merle(o, function(){
-			expect(this.value).to.be.equal(4);
-		});
-	});
 
 	it('should not reflect any nesting', function(){
 		var o = { propertyName1: {p:4} };
 
-		util.expectProperties(o, ['propertyName1', 'p']);
+		expectProperties(o, ['propertyName1', 'p']);
 	});
 
+	it('should walk the root', function(){
+		var o = { }, found = false;
+
+		merle(o, function(){
+			found = true;
+			expect(this.isRoot).to.be.true;
+		});
+
+		expect(found).to.be.true;
+	});
 });
 
 describe('walking arrays', function(){
 	it('should walk a simple array', function(){
 		merle([1], function(){
+			if (this.isRoot) return;
 			expect(this.value).to.be.equal(1);
 		});
 	});
@@ -78,13 +93,31 @@ describe('stop walking', function(){
 		});
 	});
 });
-describe('name property', function(){
-	it('should be set to the property name', function(){
-		var o = { propertyName1: 4 };
+describe('value property', function(){
+	it('should set this.value', function(){
+		var o = { propertyName1: 4 }, found;
 
 		merle(o, function(){
+			if (!this.isRoot){
+				found = true;
+				expect(this.value).to.be.equal(4);
+			}
+		});
+
+		expect(found).to.be.true;
+	});
+});
+describe('name property', function(){
+	it('should be set to the property name', function(){
+		var o = { propertyName1: 4 }, found = false;
+
+		merle(o, function(){
+			if (this.isRoot) return;
+			found = true;
 			expect(this.name).to.be.equal('propertyName1');
 		});
+
+		expect(found).to.be.true;
 	});
 });
 
@@ -104,7 +137,7 @@ describe('roots and leaves', function(){
 				expect(this.isRoot).to.be.false;
 				expect(this.isLeaf).to.be.true;
 			}
-			else {
+			else if (!this.isRoot){
 				expect(false).to.be.true;
 			}
 
@@ -132,18 +165,22 @@ describe('isOwn property', function(){
 
 describe('depth property', function(){
 	it('should start at zero', function(){
-		var o = { propertyName1: 4 };
+		var o = { }, found = false;
 
 		merle(o, function(){
+			found = true;
 			expect(this.depth).to.be.equal(0);
 		});
+
+		expect(found).to.be.true;
 	});
+
 	it('should be 1 one level deep', function(){
-		var o = { propertyName1: {two:6} };
+		var zero = { one: {two:6} };
 
 		var found = false;
-		merle(o, function(){
-			if (this.name === 'two'){
+		merle(zero, function(){
+			if (this.name === 'one'){
 				found = true;
 				expect(this.depth).to.be.equal(1);
 			}
@@ -152,30 +189,30 @@ describe('depth property', function(){
 		expect(found).to.be.true;
 	});
 	it('should be 2 two levels deep', function(){
-		var o = { propertyName1: {two:{three:6}} };
+		var zero = { one: {two:{three:6}} };
 
 		var found = false;
-		merle(o, function(){
+		merle(zero, function(){
 			if (this.name === 'three'){
 				found = true;
-				expect(this.depth).to.be.equal(2);
+				expect(this.depth).to.be.equal(3);
 			}
 		});
 
 		expect(found).to.be.true;
 	});
 	it('should be 2 two levels deep even when there are siblings', function(){
-		var o = { 
+		var zero = { 
 			propertyDontCare: 9000,
-			propertyName1: {two:{three:6}},
+			one: {two:{three:6}},
 			propertyName2:{ test:1}
 		};
 
 		var found = false;
-		merle(o, function(){
+		merle(zero, function(){
 			if (this.name === 'three'){
 				found = true;
-				expect(this.depth).to.be.equal(2);
+				expect(this.depth).to.be.equal(3);
 			}
 		});
 

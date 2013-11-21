@@ -1,15 +1,23 @@
 var walk = function(objectToWalk, cb){
 	var keys = getKeys(objectToWalk),
-		depth = 0,
 		state = {
 			name: null,
+			value: objectToWalk,
+			depth: 0,
 			parent: null,
 			get isRoot (){ return this.value === objectToWalk; },
-			get isOwn (){ return this._parent.hasOwnProperty(this.name); },
+			get isOwn (){ return !this.isRoot && this._parent.hasOwnProperty(this.name); },
 			path: []
 		};
 		
-	doWalk(objectToWalk, keys, state, depth, cb);
+	var keepGoing = cb.call(state);
+	objectToWalk = state.value;
+
+	if (keepGoing !== false){
+		doWalk(objectToWalk, keys, state, 1, cb);
+	}
+
+	return objectToWalk;
 };
 
 var doWalk = function(objectNode, keys, state, depth, cb){
