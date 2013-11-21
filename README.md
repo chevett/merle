@@ -16,6 +16,13 @@ example
       console.log(this.depth);
       console.log(this.value);
       console.log(this.path); // the array of property names that got us to this node.
+      console.log(this.isLeaf);
+      console.log(this.isRoot);
+      console.log(this.isOwn);
+      
+      this.value = 'this replaces the current node';
+      
+      return false; // returning false will stop merle from walking further down this path
       
       // if you return false the children of this node won't be walked
     });
