@@ -41,7 +41,7 @@ examples
 
 Output:
 
-    [ 5, 6, 125, [ 7, 8, 126, 1 ], { f: 10, g: 115 } ]
+        [ 5, 6, 125, [ 7, 8, 126, 1 ], { f: 10, g: 115 } ]
     
 ### delete negative numbers in-place
 
@@ -53,8 +53,30 @@ Output:
 	});
 	
 	console.dir(obj);
+	
+	
+Output:
+	
+		[ 5, 6, [ 7, 8, 1 ], { f: 10 } ]
+    	
+### collect leaf nodes
+	var m = require('merle');
+	var obj = {
+	    a : [1,2,3],
+	    b : 4,
+	    c : [5,6],
+	    d : { e : [7,8], f : 9 },
+	};
+	
+	var leaves = [];
+	m(obj, function () {
+	    if (this.isLeaf) leaves.push(this.value);
+	});
+
+	console.dir(leaves);
+
 
 
 Output:
-
-    [ 5, 6, [ 7, 8, 1 ], { f: 10 } ]
+	
+		[ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
