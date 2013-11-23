@@ -4,10 +4,18 @@ var walk = function(objectToWalk, cb){
 			name: null,
 			value: objectToWalk,
 			depth: 0,
-			parent: null,
-			get isRoot (){ return this.value === objectToWalk; },
+			path: [],
+			_parent: null,
 			get isOwn (){ return !this.isRoot && this._parent.hasOwnProperty(this.name); },
-			path: []
+			get isRoot (){ return this.value === objectToWalk; },
+			get isCycle (){
+				var o = objectToWalk;
+				for (var i=0, l=this.path.length-1; i<l; i++){
+					if (o === this.value) return true;
+					o = o[this.path[i]];
+				}
+				return false;
+			}
 		};
 		
 	var keepGoing = cb.call(state);
@@ -39,7 +47,7 @@ var doWalk = function(objectNode, keys, state, depth, cb){
 			objectNode[state.name] = state.value;
 		}
 
-		if (keepGoing !== false) {
+		if (keepGoing !== false && !state.isCycle) {
 			doWalk(objectNode[state.name], newKeys, state, depth+1, cb);
 		}
 

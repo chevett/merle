@@ -262,3 +262,30 @@ describe('transform negative numbers in-place', function(){
 		expect(obj).to.eql([ 5, 6, 125, [ 7, 8, 126, 1 ], { f: 10, g: 115 } ]);
 	});
 });
+
+describe('circular references', function(){
+	it('should not go on forever', function(){
+		var foundA = false, foundB = false, foundRoot;
+		var a = {};
+		var b = {};
+		a.b = b;
+		b.a = a;
+
+		merle(a, function(){
+			if (this.name === 'a'){
+				foundA = true;
+				expect(this.isCycle).to.be.true;
+			} else if (this.name === 'b'){
+				foundB = true;
+				expect(this.isCycle).to.be.false;
+			} else {
+				foundRoot = true;
+				expect(this.isRoot).to.be.true;
+			}
+		});
+
+		expect(foundRoot).to.be.true;
+		expect(foundA).to.be.true;
+		expect(foundB).to.be.true;
+	});
+});
