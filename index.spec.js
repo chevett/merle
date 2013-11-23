@@ -80,16 +80,51 @@ describe('walking arrays', function(){
 
 describe('stop walking', function(){
 	it('should not walk children if false is returned', function(){
-		var o = {
-			stopHere: {
-				propertyA: 6
-			}
-		};
+		var o = { stopHere: { propertyA: 6 } };
 
 		merle(o, function(){
 			if (this.name === 'stopHere') return false;
+			expect(this.name).to.not.be.equal('propertyA');
+		});
+	});
+
+	it('should not walk chiildren if stop is called', function(){
+		var o = { stopHere: { propertyA: 6 } };
+
+		merle(o, function(){
+			if (this.name === 'stopHere') return this.stop();
+			expect(this.name).to.not.be.equal('propertyA');
+		});
+	});
+	it('should continue walking other paths if stop is called', function(){
+		var found = false,
+			o = { 
+				stopHere: { propertyA: 6 },
+				xyz: 'this is okay'
+			};
+
+		merle(o, function(){
+			if (this.name === 'stopHere' && !found) return this.stop();
+
+			if (this.name === 'xyz'){
+				found = true;
+			}
 
 			expect(this.name).to.not.be.equal('propertyA');
+		});
+
+		expect(found).to.be.true;
+	});
+	it('should stop everything when stop(true) is called', function(){
+		var o = { 
+				stopHere: { propertyA: 6 },
+				xyz: 'this is okay'
+			};
+
+		merle(o, function(){
+			if (this.isRoot) return;
+			if (this.name === 'stopHere') return this.stop(true);
+			expect(false).to.be.true;
 		});
 	});
 });

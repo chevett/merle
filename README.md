@@ -12,9 +12,9 @@ example
     
     merle(someObject, function(){
     
-      console.log(this.name); // property name of someObject
-      console.log(this.depth);
+      console.log(this.name); 
       console.log(this.value);
+      console.log(this.depth);
       console.log(this.path); // the array of property names that got us to this node.
       console.log(this.isLeaf);
       console.log(this.isRoot);
@@ -22,7 +22,7 @@ example
       
       this.value = 'this replaces the current node';
       
-      return false; // returning false will stop merle from walking further down this path
+      return false; // return an explicit false is equivalent to calling this.stop(); 
       
-      // if you return false the children of this node won't be walked
+	  // this.stop() will stop walking the current path, this.stop(true) will stop completely
     });

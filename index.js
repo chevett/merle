@@ -1,3 +1,9 @@
+var STOP = {
+	no: -1,
+	soft: 0,
+	hard: 1
+};
+
 var walk = function(objectToWalk, cb){
 	var keys = getKeys(objectToWalk),
 		state = {
@@ -15,6 +21,13 @@ var walk = function(objectToWalk, cb){
 					o = o[this.path[i]];
 				}
 				return false;
+			},
+			stop: function(everything){
+				if (everything){
+					this._stop = STOP.hard;
+				} else {
+					this._stop = STOP.soft;
+				}
 			}
 		};
 		
@@ -28,30 +41,38 @@ var walk = function(objectToWalk, cb){
 	return objectToWalk;
 };
 
-var doWalk = function(objectNode, keys, state, depth, cb){
+var doWalk = function(node, keys, state, depth, cb){
 	var newKeys, value;
-	state._parent = objectNode;
+	state._parent = node;
 	state.depth = depth;
 
 	for (var i=0, l=keys.length; i<l; i++){
 		state.name = keys[i];
 		state.path.push(state.name);
-		state.value = value = objectNode[state.name];
+		state.value = value = node[state.name];
+		state._stop = STOP.no;
 
 		newKeys = getKeys(state.value);
 		state.isLeaf = !newKeys || !newKeys.length;
 
 		var keepGoing = cb.call(state);
 
+		if (keepGoing === false && state._stop === STOP.no){
+			state.stop();
+		}
+
 		if (state.value !== value){
-			objectNode[state.name] = state.value;
+			node[state.name] = state.value;
 		}
 
-		if (keepGoing !== false && !state.isCycle) {
-			doWalk(objectNode[state.name], newKeys, state, depth+1, cb);
+		if (state._stop === STOP.no && !state.isCycle) {
+			doWalk(node[state.name], newKeys, state, depth+1, cb);
+			if (state._stop === STOP.hard) return;
 		}
 
-		state.path.length -= 1;
+		state.path.pop();
+
+		if (state._stop === STOP.hard) return;
 	}
 };
 
