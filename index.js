@@ -19,6 +19,7 @@ var walk = function(objectToWalk, cb){
 			depth: 0,
 			path: [],
 			_parent: null,
+			_stop: STOP.no,
 			get isOwn (){ return !this.isRoot && this._parent.hasOwnProperty(this.name); },
 			get isRoot (){ return this.value === objectToWalk; },
 			get isCycle (){
@@ -41,7 +42,7 @@ var walk = function(objectToWalk, cb){
 	var keepGoing = cb.call(state);
 	objectToWalk = state.value;
 
-	if (keepGoing !== false){
+	if (keepGoing !== false && state._stop === STOP.no){
 		doWalk(objectToWalk, keys, state, 1, cb);
 	}
 
