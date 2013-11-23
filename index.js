@@ -4,6 +4,13 @@ var STOP = {
 	hard: 1
 };
 
+var isArray = (function(){
+	var toString = Object.prototype.toString;
+	return function(x){
+		return toString.call(x) === '[object Array]';
+	};
+})();
+
 var walk = function(objectToWalk, cb){
 	var keys = getKeys(objectToWalk),
 		state = {
@@ -25,12 +32,12 @@ var walk = function(objectToWalk, cb){
 			stop: function(everything){
 				if (everything){
 					this._stop = STOP.hard;
-				} else {
+				} else if (this._stop !== STOP.hard){
 					this._stop = STOP.soft;
 				}
 			}
 		};
-		
+	
 	var keepGoing = cb.call(state);
 	objectToWalk = state.value;
 
@@ -57,12 +64,27 @@ var doWalk = function(node, keys, state, depth, cb){
 
 		var keepGoing = cb.call(state);
 
-		if (keepGoing === false && state._stop === STOP.no){
+		if (keepGoing === false){
 			state.stop();
 		}
 
 		if (state.value !== value){
-			node[state.name] = state.value;
+			if ('value' in state){
+				node[state.name] = state.value;
+			} else {
+
+				// do the delete
+				if (isArray(node)){
+					node.splice(state.name, 1);
+					i -= 1;
+					l -= 1;
+				}
+				else {
+					delete node[state.name];
+				}
+
+				state.stop();
+			}
 		}
 
 		if (state._stop === STOP.no && !state.isCycle) {

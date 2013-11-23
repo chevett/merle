@@ -324,3 +324,47 @@ describe('circular references', function(){
 		expect(foundB).to.be.true;
 	});
 });
+
+describe('delete this.value', function(){
+	it('should remove an element from an array', function(){
+		var arr = [1,2,3,7,4,5];
+
+		merle(arr, function(){
+			if (this.value === 7){
+				delete this.value;
+			}
+		});
+
+		expect(arr).to.be.eql([1,2,3,4,5]);
+	});
+	it('should not be the same as setting to null', function(){
+		var arr = [1,2,3,7,4,5];
+
+		merle(arr, function(){
+			if (this.value === 7){
+				this.value = null;
+			}
+		});
+
+		expect(arr).to.be.eql([1,2,3,null,4,5]);
+	});
+	it('should work on objects', function(){
+		var found = true,
+			o = {
+				a: 555,
+				b: 666
+			};
+
+		merle(o, function(){
+			if (this.isRoot) return;
+			if (this.name === 'a'){
+				delete this.value;
+				return;
+			}
+			expect(this.name).to.be.equal('b');
+			found = true;
+		});
+		expect(found).to.be.true;
+		expect(o).to.be.eql({b:666});
+	});
+});
