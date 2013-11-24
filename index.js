@@ -43,20 +43,20 @@ var walk = function(objectToWalk, cb){
 	objectToWalk = state.value;
 
 	if (keepGoing !== false && state._stop === STOP.no){
-		doWalk(objectToWalk, keys, state, 1, cb);
+		doWalk(objectToWalk, keys, state, cb);
 	}
 
 	return objectToWalk;
 };
 
-var doWalk = function(node, keys, state, depth, cb){
+var doWalk = function(node, keys, state, cb){
 	var newKeys, value;
 	state._parent = node;
-	state.depth = depth;
 
 	for (var i=0, l=keys.length; i<l; i++){
 		state.name = keys[i];
 		state.path.push(state.name);
+		state.depth = state.path.length;
 		state.value = value = node[state.name];
 		state._stop = STOP.no;
 
@@ -89,7 +89,7 @@ var doWalk = function(node, keys, state, depth, cb){
 		}
 
 		if (state._stop === STOP.no && !state.isCycle) {
-			doWalk(node[state.name], newKeys, state, depth+1, cb);
+			doWalk(node[state.name], newKeys, state, cb);
 			if (state._stop === STOP.hard) return;
 		}
 

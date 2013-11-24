@@ -253,6 +253,16 @@ describe('depth property', function(){
 
 		expect(found).to.be.true;
 	});
+	it('should have the same length as the path', function(){
+		var zero = {
+			1:{ 2:{3:{}}},
+			one: { two: { three: {}}}
+		};
+
+		merle(zero, function(){
+			expect(this.depth, this.name).to.be.equal(this.path.length);
+		});
+	});
 });
 describe('path property', function(){
 	it('should be an array of parent property names', function(){
