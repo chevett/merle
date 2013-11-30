@@ -2,7 +2,7 @@ merle [![Build Status](https://travis-ci.org/chevett/merle.png?branch=master)](h
 =====
 [![NPM](https://nodei.co/npm-dl/merle.png?months=1)](https://nodei.co/npm/merle/)
 
-poor man's [traverse](https://github.com/substack/js-traverse), except merle includes inherited properties.
+poor man's [traverse](https://github.com/substack/js-traverse), except merle includes inherited members.
 
 ![get it](http://media.moddb.com/cache/images/groups/1/6/5169/thumb_620x2000/Merle_Dixon_-_The_Walking_Dead_-_Guts34.jpg)
 
