@@ -1,4 +1,4 @@
-merle [![Build Status](https://travis-ci.org/chevett/merle.png?branch=master)](https://travis-ci.org/chevett/merle?branch=master)
+merle [![Build Status](https://travis-ci.org/chevett/merle.png?branch=master)](https://travis-ci.org/chevett/merle?branch=master) [![NPM](https://nodei.co/npm-dl/merle.png?months=1)](https://nodei.co/npm/merle/)
 =====
 
 poor man's [traverse](https://github.com/substack/js-traverse), except merle includes inherited properties.
@@ -8,75 +8,81 @@ poor man's [traverse](https://github.com/substack/js-traverse), except merle inc
 
 examples
 -------
-    var merle = require('merle');
-    
-    merle(someObject, function(){
-    
-      console.log(this.name); 
-      console.log(this.value);
-      console.log(this.depth);
-      console.log(this.path); // the array of property names that got us to this node.
-      console.log(this.isLeaf);
-      console.log(this.isRoot);
-      console.log(this.isOwn);
-      
-      this.value = 'this replaces the current node';
-      
-      return false; // return an explicit false is equivalent to calling this.stop(); 
-      
-	  // this.stop() will stop walking the current path, this.stop(true) will stop completely
-    });
+```js
+var merle = require('merle');
 
+merle(someObject, function(){
+
+console.log(this.name); 
+console.log(this.value);
+console.log(this.depth);
+console.log(this.path); // the array of property names that got us to this node.
+console.log(this.isLeaf);
+console.log(this.isRoot);
+console.log(this.isOwn);
+
+this.value = 'this replaces the current node';
+
+return false; // return an explicit false is equivalent to calling this.stop(); 
+
+  // this.stop() will stop walking the current path, this.stop(true) will stop completely
+});
+```
 ### transform negative numbers in-place
+```js
+var merle = require('merle');
+var obj = [ 5, 6, -3, [ 7, 8, -2, 1 ], { f : 10, g : -13 } ];
 
-	var merle = require('merle');
-	var obj = [ 5, 6, -3, [ 7, 8, -2, 1 ], { f : 10, g : -13 } ];
-	
-	merle(obj, function () {
-	    if (this.value < 0) this.value += 128;
-	});
-	
-	console.dir(obj);
+merle(obj, function () {
+    if (this.value < 0) this.value += 128;
+});
 
+console.dir(obj);
+```
 
 Output:
-
-        [ 5, 6, 125, [ 7, 8, 126, 1 ], { f: 10, g: 115 } ]
-    
+```js
+[ 5, 6, 125, [ 7, 8, 126, 1 ], { f: 10, g: 115 } ]
+```
 ### delete negative numbers in-place
+```js
+var merle = require('merle');
+var obj = [ 5, 6, -3, [ 7, 8, -2, 1 ], { f : 10, g : -13 } ];
 
-	var merle = require('merle');
-	var obj = [ 5, 6, -3, [ 7, 8, -2, 1 ], { f : 10, g : -13 } ];
-	
-	merle(obj, function () {
-	    if (this.value < 0) delete this.value;
-	});
-	
-	console.dir(obj);
-	
+merle(obj, function () {
+    if (this.value < 0) delete this.value;
+});
+
+console.dir(obj);
+```
 	
 Output:
-	
-		[ 5, 6, [ 7, 8, 1 ], { f: 10 } ]
-    	
+```js	
+[ 5, 6, [ 7, 8, 1 ], { f: 10 } ]
+```	
 ### collect leaf nodes
-	var m = require('merle');
-	var obj = {
-	    a : [1,2,3],
-	    b : 4,
-	    c : [5,6],
-	    d : { e : [7,8], f : 9 },
-	};
-	
-	var leaves = [];
-	m(obj, function () {
-	    if (this.isLeaf) leaves.push(this.value);
-	});
+```js
+var m = require('merle');
+var obj = {
+    a : [1,2,3],
+    b : 4,
+    c : [5,6],
+    d : { e : [7,8], f : 9 },
+};
 
-	console.dir(leaves);
+var leaves = [];
+m(obj, function () {
+    if (this.isLeaf) leaves.push(this.value);
+});
 
+console.dir(leaves);
+```
 
 
 Output:
-	
-		[ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
+```js	
+[ 1, 2, 3, 4, 5, 6, 7, 8, 9 ]
+```		
+		
+		
+
