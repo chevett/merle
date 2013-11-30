@@ -56,6 +56,28 @@ describe('walking objects', function(){
 
 		expect(found).to.be.true;
 	});
+
+	it('should not get every character in a string', function(){
+		var o = { s: 'mike' };
+
+		merle(o, function(){
+			expect(this.value).to.not.be.equal('m');
+		});
+	});
+	it('should get string methods', function(){
+		String.prototype.hello = 'hi';
+		
+		var o = { s: 'mike' }, found = false;
+		expect(o.s.hello).to.be.ok;
+
+		merle(o, function(){
+			if (this.name === 'hello'){
+				expect(this.value).to.be.equal('hi');
+				found = true;
+			}
+		});
+		expect(found).to.be.true;
+	});
 });
 
 describe('walking arrays', function(){

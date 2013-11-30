@@ -100,8 +100,10 @@ var doWalk = function(node, keys, state, cb){
 };
 
 var getKeys = function(value){
+	var isString = typeof value === 'string';
 	var arr = [];
 	for (var key in value){
+		if (isString && /^\d+$/.test(key)) continue;
 		arr.push(key);
 	}
 
